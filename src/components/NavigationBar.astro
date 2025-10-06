@@ -5,6 +5,30 @@ import { generateRoute } from '@lib/routingUtils';
 import { UI_DICTIONARY } from '@lib/uiDictionary';
 import { filterByLocalisedSlug, getDate, getSlug, getTitle, type DateObject } from '@lib/contentUtils';
 
+/** 
+ * The way it works:
+ * 1. The 'About' page (if present) is given special treatment and always appears first in the menu.
+ * 
+ * 2. A set of content collections (projects, writings, happenings, resources) are dynamically rendered
+ *    as expandable menu items *only if* they contain any localised documents.
+ * 3. For each collection:
+ *    - If it has valid, localised documents, it becomes a parent menu item with a submenu.
+ *    - The submenu contains a link for each document.
+ * 
+ * 4. A special exception is made for the 'Special Project' (i.e. Counter-Map):
+ *    - If it exists, it is injected as the first item within the 'projects' submenu.
+ * 
+ * 5. Each submenu has a fixed height (via CSS) based on the total number of valid menu items.
+ *    - The variable `--how-many-menu-items` is used to control submenu height and layout.
+ * 
+ * 6. Empty or disabled collections:
+ *    - If a collection has valid documents in one locale but not in another,
+ *      it appears as a disabled button in the locale where it's empty.
+ * 
+ * 7. Scroll position is preserved between navigations using `astro:before-preparation` and `astro:after-swap`
+ *    to ensure submenu scroll is not reset during content changes.
+ */
+
 type Props = {
     lang: Language;
     currentPath: string;
@@ -105,9 +129,10 @@ const MINIMUM_MENU_ITEMS_COUNT = baseMenuItemsCount + dynamicMenuItemsCount;
                             const localisedItems = (filterByLocalisedSlug(docs, langId) as CollectionDocument[]) || [];
                             const itemsExist = hasDocs(localisedItems);
                             const sectionTitle = UI_DICTIONARY[key][langId];
-                            const delta = MINIMUM_MENU_ITEMS_COUNT - localisedItems.length;
                             const buttonId = `nav-${key}-button-${langId}`;
                             const submenuId = `nav-${key}-submenu-${langId}`;
+                            const hasCounterMap = key === 'project' && items.specialProject_counterMap && routeToCounterMap;
+                            const delta = MINIMUM_MENU_ITEMS_COUNT - localisedItems.length - (hasCounterMap ? 1 : 0);
                             return (
                                 <li class='navigation-menu-item collection-navigation-item'>
                                     {itemsExist ? (
@@ -123,7 +148,7 @@ const MINIMUM_MENU_ITEMS_COUNT = baseMenuItemsCount + dynamicMenuItemsCount;
                                             <bdi>{sectionTitle}</bdi>
                                         </button>
                                         <ul id={submenuId} class='navigation-submenu' aria-hidden='true' hidden tabindex='-1'>
-                                            {key === 'project' && items.specialProject_counterMap && routeToCounterMap && (
+                                            {hasCounterMap && (
                                                 <li class='navigation-submenu-item static-navigation-item'>
                                                     <a
                                                         href={routeToCounterMap}

@@ -1,0 +1,152 @@
+---
+import type { GetStaticPaths } from 'astro';
+import type { CounterMap as CounterMapProps, Language } from '@root/sanity/sanity.types';
+import { SUPPORTED_LANGUAGES_IDS } from '@lib/languageUtils';
+import { definedLocalisedSlug, definedMapAsset, RESOLVED_CONTENT_QUERY } from '@lib/groqUtils';
+import sanityClient from '@root/sanity/sanity.cli';
+import { filterByLocalisedSlug, getContent, getSlug, getSummary, getTextLength, getTitle, type AlternateDocument } from '@lib/contentUtils';
+import { COUNTER_MAP_SUBPAGE_PATHS, generateRoute, getSubpageKeyFromSlug, HOME_PAGE_PATHNAME, LOCALE_PREFIXES, type SubpageSlug } from '@lib/routingUtils';
+import Layout from '@layouts/Layout.astro';
+import CounterMap from '@components/CounterMap.astro';
+import WindowedContent from '@components/WindowedContent.astro';
+import PageContent from '@components/PageContent.astro';
+import { UI_DICTIONARY } from '@lib/uiDictionary';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+    type CounterMapSubpages = {
+        [K in Language]: SubpageSlug[];
+    };
+    const COUNTER_MAP_SUBPAGES: CounterMapSubpages = {
+        en: [
+            'information',
+            'contribute',
+        ],
+        ar: [
+            'maaloumat',
+            'lil-musahama'
+        ],
+    };
+    const documentType: CounterMapProps['_type'] = 'specialProject_counterMap';
+    const languages: Language[] = SUPPORTED_LANGUAGES_IDS as Language[];
+    const paths: { params: Record<string, string>, props: Record<string, any> }[] = [];
+    const baseQueryFields = [
+        '_id',
+        '_type',
+        'title',
+        'slug',
+        'summary',
+        'mainImage',
+        'submissionForm->',
+        RESOLVED_CONTENT_QUERY,
+    ];
+    const queryFields = baseQueryFields.join(', ');
+    const fetchedDoc: CounterMapProps = await sanityClient.fetch(`
+        *[_type == '${documentType}' && (${definedLocalisedSlug}) && (${definedMapAsset})][0] {
+            ${queryFields}
+        }
+    `);
+    for (const lang of languages) {
+        const localisedDocs = filterByLocalisedSlug([fetchedDoc], lang);
+        if (!Array.isArray(localisedDocs) || localisedDocs.length === 0) continue;
+        const doc = localisedDocs[0];
+        const slug = getSlug(doc, lang);
+        if (!slug) continue;
+        const locale = LOCALE_PREFIXES[lang];
+        for (const subpageSlug of COUNTER_MAP_SUBPAGES[lang]) {
+            paths.push({
+                params: {
+                    locale: locale,
+                    collection: slug,
+                    counter_map_subpage: (subpageSlug),
+                },
+                props: {
+                    lang: lang,
+                    doc: doc,
+                    subpageSlug: subpageSlug,
+                },
+            });
+        }
+    }
+    return paths;
+};
+
+type Props = {
+    lang: Language;
+    doc: CounterMapProps;
+    subpageSlug: SubpageSlug;
+};
+
+const {
+    lang,
+    doc,
+    subpageSlug,
+} = Astro.props as Props;
+
+const subpageKey = getSubpageKeyFromSlug(subpageSlug, lang);
+
+const routeToCounterMap = generateRoute(doc, lang);
+const resolvedTitle = getTitle(doc, lang);
+const resolvedDescription = getSummary(doc, lang);
+const resolvedImage = doc.mainImage;
+const resolvedTextLength = getTextLength(doc, lang);
+const resolvedContent = getContent(doc, lang);
+
+const resolvedAlternates: AlternateDocument[] = (() => {
+    if (!subpageKey) return [];
+    return SUPPORTED_LANGUAGES_IDS
+        .filter((l) => l !== lang)
+        .map((altLang) => {
+            const altSlug = getSlug(doc, altLang);
+            const altTitle = getTitle(doc, altLang);
+            const altSubpage = COUNTER_MAP_SUBPAGE_PATHS[subpageKey][altLang];
+            if (!altSlug || !altTitle || !altSubpage) return null;
+            return {
+                lang: altLang,
+                type: doc._type,
+                slug: altSlug,
+                title: altTitle,
+                route: `/${LOCALE_PREFIXES[altLang]}/${altSlug}/${altSubpage}`,
+            };
+        })
+        .filter(Boolean) as AlternateDocument[];
+})();
+
+const resolvedSubmissionForm = doc.submissionForm;
+---
+
+<Layout
+    lang={lang}
+    title={resolvedTitle}
+    description={resolvedDescription}
+    image={resolvedImage}
+    alternates={resolvedAlternates}
+>
+    <CounterMap
+        lang={lang}
+        exitPathname={HOME_PAGE_PATHNAME}
+    />
+    <WindowedContent
+        lang={lang}
+        title={(subpageKey && UI_DICTIONARY[subpageKey]?.[lang]) ?? resolvedTitle}
+        type={doc._type}
+        textLength={resolvedTextLength}
+        alternates={resolvedAlternates}
+        exitPathname={routeToCounterMap}
+    >
+        {resolvedContent && (subpageSlug === 'information' || subpageSlug === 'maaloumat') && (
+            <PageContent source={resolvedContent} lang={lang} />
+        )}
+        {resolvedSubmissionForm && (subpageSlug === 'contribute' || subpageSlug === 'lil-musahama') && (
+            <PageContent
+                source={[
+                    {
+                        _key: '',
+                        _type: 'formBlock',
+                        form: resolvedSubmissionForm,
+                    },
+                ]}
+                lang={lang}
+            />
+        )}
+    </WindowedContent>
+</Layout>

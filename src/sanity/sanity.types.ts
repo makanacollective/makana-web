@@ -100,6 +100,7 @@ export type Resource = SanityDocumentBase
 
 export type CounterMapInitiative = SanityDocumentBase
   & IsTargetable
+  & IsFeaturable
   & HasTitle
   & HasContent
   & HasMeta

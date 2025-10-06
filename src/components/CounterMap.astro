@@ -6,7 +6,8 @@ import { DEFAULT_LANGUAGE_ID } from '@lib/languageUtils';
 import { fetchSvg } from '@lib/imageUtils';
 import { getDate, getPreferredSlug, getTitle, type DateObject } from '@lib/contentUtils';
 import SuperposedContent from '@components/SuperposedContent.astro';
-import { generateRoute } from '@lib/routingUtils';
+import { COUNTER_MAP_SUBPAGE_PATHS, generateRoute, type SubpageKey } from '@lib/routingUtils';
+import { UI_DICTIONARY } from '@lib/uiDictionary';
 
 const doc: (CounterMap & {
     mapAssetUrl?: string | undefined;
@@ -14,7 +15,10 @@ const doc: (CounterMap & {
     mapAssetHeight?: number | undefined;
 }) | undefined = await sanityClient.fetch(`
     *[_type == 'specialProject_counterMap' && (${definedLocalisedSlug}) && (${definedMapAsset})][0] {
+        _id,
+        _type,
         title,
+        slug,
         date,
         'mapAssetUrl': mapAsset.asset->url,
         'mapAssetWidth': mapAsset.asset->metadata.dimensions.width,
@@ -57,76 +61,111 @@ const hasMapAsset = !!(
 );
 
 const svgContent = hasMapAsset && await fetchSvg(doc.mapAssetUrl, false);
+
+const counterMapSlugData = getPreferredSlug(doc, lang);
+const langUsed = counterMapSlugData?.langUsed;
+const routeToCounterMap = generateRoute(doc, counterMapSlugData?.langUsed);
 ---
 
-<div>
-    <SuperposedContent
-        lang={lang}
-        title={resolvedTitle}
-        date={resolvedDate && {
-            iso: resolvedDate.iso,
-            compact: resolvedDate.compact,
-            readable: resolvedDate.readable,
-        } || undefined}
-        exitPathname={exitPathname}
-    >
-        <div id='counter-map' transition:persist='counter-map'>
-            {svgContent && (
-                <svg viewBox={`0 0 ${doc.mapAssetWidth} ${doc.mapAssetHeight}`} xmlns='http://www.w3.org/2000/svg'>
-                    <g id='counter-map-asset'>
-                        <Fragment set:html={svgContent.replace(/\s*(viewBox)\s*=\s*(['"])[\s\S]*?\2/gi, '')} />
-                    </g>
-                    {Array.isArray(doc.mapMarkers) && doc.mapMarkers.filter((marker) => {
-                        return marker
-                        && typeof marker.x === 'number'
-                        && !isNaN(marker.x)
-                        && typeof marker.y === 'number'
-                        && !isNaN(marker.y) ? true : false;
-                    }).length !== 0 && (
-                        <g id='counter-map-markers'>
-                            {doc.mapMarkers.map((marker, index) => {
-                                const initiative = marker.initiative;
-                                const slugData = getPreferredSlug(initiative, lang);
-                                const initiativeTitle = getTitle(initiative, slugData?.langUsed);
-                                const routeToInitiative = generateRoute(initiative, slugData?.langUsed);
-                                return marker.x && marker.y && (
-                                    <a
-                                        class={`marker-${routeToInitiative ? 'enabled' : 'disabled'}`}
-                                        href={routeToInitiative}
-                                        title={initiativeTitle}
-                                        data-action={routeToInitiative ? 'open-windowed-content' : undefined}
-                                        data-action-target-lang={routeToInitiative ? lang : undefined}
-                                        data-action-target-type={marker?.initiative?._type ?? undefined}
-                                        data-action-target-pathname={routeToInitiative}
-                                    >
-                                        <circle
-                                            cx={marker.x / 100 * doc.mapAssetWidth!}
-                                            cy={marker.y / 100 * doc.mapAssetHeight!}
-                                            r='1.75rem'
-                                        />
-                                        <text
-                                            x={marker.x / 100 * doc.mapAssetWidth!}
-                                            y={marker.y / 100 * doc.mapAssetHeight!}
-                                            text-anchor='middle'
-                                            dominant-baseline='central'
-                                        >
-                                            {index + 1}
-                                        </text>
-                                    </a>
-                                );
-                            })}
+{doc && (
+    <div>
+        <SuperposedContent
+            lang={lang}
+            title={resolvedTitle}
+            date={resolvedDate && {
+                iso: resolvedDate.iso,
+                compact: resolvedDate.compact,
+                readable: resolvedDate.readable,
+            } || undefined}
+            exitPathname={exitPathname}
+        >
+            <div id='counter-map' transition:persist='counter-map'>
+                {svgContent && (
+                    <svg viewBox={`0 0 ${doc.mapAssetWidth} ${doc.mapAssetHeight}`} xmlns='http://www.w3.org/2000/svg'>
+                        <g class='svg-pan-zoom_viewport'>
+                            <g id='counter-map-asset'>
+                                <Fragment set:html={svgContent.replace(/\s*(viewBox)\s*=\s*(['"])[\s\S]*?\2/gi, '')} />
+                            </g>
+                            {Array.isArray(doc.mapMarkers) && doc.mapMarkers.filter((marker) => {
+                                return marker
+                                && typeof marker.x === 'number'
+                                && !isNaN(marker.x)
+                                && typeof marker.y === 'number'
+                                && !isNaN(marker.y) ? true : false;
+                            }).length !== 0 && (
+                                <g id='counter-map-markers'>
+                                    {doc.mapMarkers.map((marker, index) => {
+                                        const initiative = marker.initiative;
+                                        const slugData = getPreferredSlug(initiative, lang);
+                                        const initiativeTitle = getTitle(initiative, slugData?.langUsed);
+                                        const routeToInitiative = generateRoute(initiative, slugData?.langUsed);
+                                        return marker.x && marker.y && (
+                                            <a
+                                                class={`marker-${routeToInitiative ? 'enabled' : 'disabled'}`}
+                                                href={routeToInitiative}
+                                                title={initiativeTitle}
+                                                data-action={routeToInitiative ? 'open-windowed-content' : undefined}
+                                                data-action-target-lang={routeToInitiative ? lang : undefined}
+                                                data-action-target-type={marker?.initiative?._type ?? undefined}
+                                                data-action-target-pathname={routeToInitiative}
+                                            >
+                                                <circle
+                                                    cx={marker.x / 100 * doc.mapAssetWidth!}
+                                                    cy={marker.y / 100 * doc.mapAssetHeight!}
+                                                    r='1rem'
+                                                />
+                                                <text
+                                                    x={marker.x / 100 * doc.mapAssetWidth!}
+                                                    y={marker.y / 100 * doc.mapAssetHeight!}
+                                                    text-anchor='middle'
+                                                    dominant-baseline='central'
+                                                >
+                                                    {index + 1}
+                                                </text>
+                                            </a>
+                                        );
+                                    })}
+                                </g>
+                            )}
                         </g>
-                    )}
-                </svg>
+                    </svg>
+                )}
+            </div>
+            {langUsed && routeToCounterMap && (
+                <Fragment slot='in-orbs'>
+                    {Object.keys(COUNTER_MAP_SUBPAGE_PATHS).map((key) => {
+                        const subpageKey = key as SubpageKey;
+                        const href= routeToCounterMap + COUNTER_MAP_SUBPAGE_PATHS[subpageKey][langUsed];
+                        const label =
+                            subpageKey === 'counter-map-information' ? UI_DICTIONARY.counterMapInformationLabel[langUsed]
+                            : subpageKey === 'counter-map-contribute' ? UI_DICTIONARY.counterMapContributeLabel[langUsed]
+                            : resolvedTitle;
+                        const symbol =
+                            subpageKey === 'counter-map-information' ? UI_DICTIONARY.counterMapInformationSymbol
+                            : subpageKey === 'counter-map-contribute' ? UI_DICTIONARY.counterMapContributeSymbol
+                            : undefined;
+                        return subpageKey && href && label && symbol && (
+                            <div class={`counter-map-orb ${subpageKey}`}>
+                                <a
+                                    href={href}
+                                    title={label}
+                                    aria-label={label}
+                                    data-action='open-windowed-content'
+                                    data-action-target-lang={langUsed}
+                                    data-action-target-type={doc._type}
+                                    data-action-target-pathname={href}
+                                >
+                                    <Fragment set:html={symbol} />
+                                </a>
+                            </div>
+                        );
+                    })}
+                </Fragment>
             )}
-        </div>
-        {/* <div slot='in-orbs'>
-            <a href='#information'>
-                Orb
-            </a>
-        </div> */}
-    </SuperposedContent>
-</div>
+        </SuperposedContent>
+    </div>
+)}
+
 
 <script>
     import svgPanZoom from 'svg-pan-zoom';
@@ -142,7 +181,7 @@ const svgContent = hasMapAsset && await fetchSvg(doc.mapAssetUrl, false);
         const FIT = true;
         const GUTTER_WIDTH = 300;
         const GUTTER_HEIGHT = 300;
-        const MIN_ZOOM = 1;
+        const MIN_ZOOM = 0.75;
         const MAX_ZOOM = 5;
         const ZOOM_SENSITIVITY = 0.2;
         let isDragging = false;
@@ -161,6 +200,7 @@ const svgContent = hasMapAsset && await fetchSvg(doc.mapAssetUrl, false);
             zoomScaleSensitivity: ZOOM_SENSITIVITY,
             minZoom: MIN_ZOOM,
             maxZoom: MAX_ZOOM,
+            // Enable pinch-zooming and other touch-screen controls
             customEventsHandler: {
                 haltEventListeners: [
                     'touchstart',
@@ -245,9 +285,6 @@ const svgContent = hasMapAsset && await fetchSvg(doc.mapAssetUrl, false);
             isDragging = false;
             counterMapContainer.style.removeProperty('cursor');
         });
-
-        // Enable pinch zooming
-        // TODO
     };
 
     initPanZoom();
@@ -261,7 +298,12 @@ const svgContent = hasMapAsset && await fetchSvg(doc.mapAssetUrl, false);
         left: 0;
         right: 0;
         bottom: 0;
-        background: var(--counter-map-viewport-background-colour);
+        background-color: var(--counter-map-viewport-background-colour);
+        background-image:
+            linear-gradient(to right, var(--counter-map-viewport-grid-lines-colour) 1px, transparent 1px),
+            linear-gradient(to bottom, var(--counter-map-viewport-grid-lines-colour) 1px, transparent 1px);
+        background-size: 1rem 1rem;
+        background-position: 50% 50%;
         overflow: hidden;
         touch-action: none;
     }
@@ -270,7 +312,7 @@ const svgContent = hasMapAsset && await fetchSvg(doc.mapAssetUrl, false);
         height: 100%;
         width: 100%;
     }
-    #counter-map-asset > :global(*) {
+    #counter-map-asset :global(*) {
         vector-effect: initial !important;
     }
     #counter-map-markers circle {
@@ -278,6 +320,7 @@ const svgContent = hasMapAsset && await fetchSvg(doc.mapAssetUrl, false);
     }
     #counter-map-markers text {
         font-weight: 400;
+        font-size: 0.875rem;
     }
     .marker-enabled {
         fill: var(--counter-map-marker-enabled-background-colour);
@@ -298,5 +341,34 @@ const svgContent = hasMapAsset && await fetchSvg(doc.mapAssetUrl, false);
         .marker-enabled:hover text {
             fill: var(--counter-map-marker-hover-foreground-colour);
         }
+    }
+
+    .counter-map-orb {
+        border-radius: 100%;
+        box-shadow: 0 0 0 1px var(--counter-map-orb-outline-colour);
+        background-color: var(--counter-map-orb-background-colour);
+    }
+    .counter-map-orb a {
+        display: block;
+        width: var(--content-orb-width);
+        height: var(--content-orb-width);
+    }
+    .counter-map-orb :global(svg) {
+        display: block;
+        width: 100%;
+        height: 100%;
+        padding: var(--content-orb-padding);
+        @media (any-hover: hover) {
+            &:hover {
+                color: var(--text-link-hover-colour);
+            }
+        }
+    }
+    .counter-map-information :global(svg) {
+        fill: currentColor;
+    }
+    .counter-map-contribute :global(svg) {
+        stroke-width: 1px;
+        stroke: currentColor;
     }
 </style>

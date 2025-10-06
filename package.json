@@ -21,6 +21,7 @@
     "svg-pan-zoom": "^3.6.2"
   },
   "devDependencies": {
+    "@types/hammerjs": "^2.0.46",
     "@types/luxon": "^3.6.2"
   }
 }

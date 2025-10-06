@@ -1,5 +1,5 @@
 import type { AnyTargetableDocumentType, Language } from '@root/sanity/sanity.types';
-import { HOME_PAGE_PATHNAME } from '@lib/routingUtils';
+import { HOME_PAGE_PATHNAME, type SubpageKey } from '@lib/routingUtils';
 
 type LocalisedRecord<T> = {
     [L in Language]: T;
@@ -9,7 +9,11 @@ type DocumentTypeLabels = {
   [K in AnyTargetableDocumentType]: LocalisedRecord<string>;
 };
 
-export const UI_DICTIONARY: DocumentTypeLabels & {
+type SubpageTitles = {
+  [K in SubpageKey]: LocalisedRecord<string | null>;
+};
+
+export const UI_DICTIONARY: DocumentTypeLabels & SubpageTitles & {
     websiteTitle: LocalisedRecord<string>;
     untitledLabel: LocalisedRecord<string>;
     navigationMenuLabel: LocalisedRecord<string>;
@@ -28,6 +32,10 @@ export const UI_DICTIONARY: DocumentTypeLabels & {
     datePlaceholder: string;
     timeAmLabel: LocalisedRecord<string>;
     timePmLabel: LocalisedRecord<string>;
+    counterMapInformationLabel: LocalisedRecord<string>;
+    counterMapContributeLabel: LocalisedRecord<string>;
+    counterMapInformationSymbol: string;
+    counterMapContributeSymbol: string;
 } = {
     websiteTitle: {
         ar: 'مكانة',
@@ -120,4 +128,22 @@ export const UI_DICTIONARY: DocumentTypeLabels & {
         ar: 'مبادرات',
         en: 'Initiatives',
     },
+    'counter-map-information': {
+        ar: null,
+        en: null,
+    },
+    'counter-map-contribute': {
+        ar: 'المساهمة في قائمة المبادرات',
+        en: 'Contribute to our list of initiatives',
+    },
+    counterMapInformationLabel: {
+        ar: 'معلومات حول الخريطة',
+        en: 'About the map',
+    },
+    counterMapContributeLabel: {
+        ar: 'المساهمة في قائمة المبادرات',
+        en: 'Contribute to our list of initiatives',
+    },
+    counterMapInformationSymbol: `<svg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M12,8.6c-.2,0-.4,0-.5-.2,0-.1-.1-.2-.1-.4v-.2c0-.2,0-.3.1-.4,0-.1.2-.2.5-.2s.4,0,.5.2.1.2.1.4v.2c0,.2,0,.3-.1.4s-.2.2-.5.2ZM11.5,16.4v-6.3h1v6.3h-1Z'/></svg>`,
+    counterMapContributeSymbol: `<svg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><line x1='12' y1='4' x2='12' y2='20'/><line x1='4' y1='12' x2='20' y2='12'/></svg>`,
 };

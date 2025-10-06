@@ -43,6 +43,30 @@ const isCollectionDocument = (doc: AnyTargetableDocumentStub): doc is Collection
     return doc._type in DOCUMENT_COLLECTION_PATHS;
 };
 
+export type SubpageKey = 'counter-map-information' | 'counter-map-contribute';
+
+export type SubpageSlug = 'information' | 'maaloumat' | 'contribute' | 'lil-musahama';
+
+export const COUNTER_MAP_SUBPAGE_PATHS: Record<SubpageKey, LocalisedRecord<SubpageSlug>> = {
+    'counter-map-information': {
+        en: 'information',
+        ar: 'maaloumat',
+    },
+    'counter-map-contribute': {
+        en: 'contribute',
+        ar: 'lil-musahama',
+    },
+};
+
+export const getSubpageKeyFromSlug = (
+    slug: SubpageSlug,
+    lang: Language,
+): SubpageKey | undefined => {
+    return (Object.keys(COUNTER_MAP_SUBPAGE_PATHS) as SubpageKey[]).find((key) => {
+        return COUNTER_MAP_SUBPAGE_PATHS[key][lang] === slug;
+    });
+};
+
 export const generateRoute = (
     doc: AnyTargetableDocumentStub | undefined,
     lang: Language | undefined,

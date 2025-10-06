@@ -29,15 +29,19 @@
     --windowed-content-writing-background-colour: #fff;
     --windowed-content-happening-background-colour: #fff500;
     --windowed-content-resource-background-colour: #ff7d57;
+    --windowed-content-counter-map-background-colour: #fff500;
     --windowed-content-initiative-background-colour: #fff;
     // superposed content
     --superposed-content-outline-colour: #707070;
     // content orbs
     --content-orb-background-colour: #fff;
     --content-orb-outline-colour: #707070;
+    --counter-map-orb-background-colour: #fff500;
+    --counter-map-orb-outline-colour: #707070;
     // counter-map
     --counter-map-viewport-background-colour: rgba(0, 0, 0, 0.15);
-    --counter-map-marker-enabled-background-colour: #fff500;
+    --counter-map-viewport-grid-lines-colour: rgba(0, 0, 0, 0.075);
+    --counter-map-marker-enabled-background-colour: #fff;
     --counter-map-marker-enabled-foreground-colour: var(--text-default-colour);
     --counter-map-marker-hover-foreground-colour: var(--text-link-hover-colour);
     --counter-map-marker-disabled-background-colour: #b7b7b7;
