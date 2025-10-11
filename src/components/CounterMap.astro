@@ -181,8 +181,8 @@ const routeToCounterMap = generateRoute(doc, counterMapSlugData?.langUsed);
         const FIT = false;
         const GUTTER_WIDTH = 300;
         const GUTTER_HEIGHT = 300;
-        const MIN_ZOOM = 0.75;
-        const MAX_ZOOM = 5;
+        const MIN_ZOOM = 0.5;
+        const MAX_ZOOM = 10;
         const ZOOM_SENSITIVITY = 0.2;
         let isDragging = false;
 
@@ -285,6 +285,11 @@ const routeToCounterMap = generateRoute(doc, counterMapSlugData?.langUsed);
             isDragging = false;
             counterMapContainer.style.removeProperty('cursor');
         });
+
+        // Make visible
+        requestAnimationFrame(() => {
+            counterMapSvg.style.opacity = '1';
+        });
     };
 
     initPanZoom();
@@ -311,6 +316,7 @@ const routeToCounterMap = generateRoute(doc, counterMapSlugData?.langUsed);
         display: block;
         height: 100%;
         width: 100%;
+        opacity: 0;
     }
     #counter-map-asset :global(*) {
         vector-effect: initial !important;
