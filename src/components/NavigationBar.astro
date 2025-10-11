@@ -171,7 +171,7 @@ const MINIMUM_MENU_ITEMS_COUNT = baseMenuItemsCount + dynamicMenuItemsCount;
                                             {localisedItems.map((item) => {
                                                 const itemSlug = getSlug(item, langId);
                                                 const itemTitle = getTitle(item, langId);
-                                                const itemDate: DateObject | undefined = 'date' in item ? {
+                                                const itemDate: DateObject | undefined = ('date' in item || 'startDate' in item) ? {
                                                     iso: getDate(item, 'iso', langId),
                                                     compact: getDate(item, 'compact', langId),
                                                     readable: getDate(item, 'readable', langId),

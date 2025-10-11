@@ -6,7 +6,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
     site: import.meta.env.DEV
         ? 'http://localhost:4321'
-        : 'https://fascinating-semifreddo-0284e3.netlify.app', // TODO
+        : 'https://makanacollective.org',
     integrations: [
         sitemap(), 
     ],
