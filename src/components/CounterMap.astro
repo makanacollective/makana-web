@@ -23,6 +23,7 @@ const doc: (CounterMap & {
         'mapAssetUrl': mapAsset.asset->url,
         'mapAssetWidth': mapAsset.asset->metadata.dimensions.width,
         'mapAssetHeight': mapAsset.asset->metadata.dimensions.height,
+        mapViewportBackgroundColour,
         mapMarkers[] {
             x,
             y,
@@ -69,6 +70,9 @@ const routeToCounterMap = generateRoute(doc, counterMapSlugData?.langUsed);
 
 {doc && (
     <div>
+        {doc.mapViewportBackgroundColour && (
+            <Fragment set:html={`<style>:root{--counter-map-viewport-background-colour:${doc.mapViewportBackgroundColour};}</style>`} />
+        )}
         <SuperposedContent
             lang={lang}
             title={resolvedTitle}
@@ -304,11 +308,12 @@ const routeToCounterMap = generateRoute(doc, counterMapSlugData?.langUsed);
         right: 0;
         bottom: 0;
         background-color: var(--counter-map-viewport-background-colour);
-        background-image:
-            linear-gradient(to right, var(--counter-map-viewport-grid-lines-colour) 1px, transparent 1px),
-            linear-gradient(to bottom, var(--counter-map-viewport-grid-lines-colour) 1px, transparent 1px);
-        background-size: 1rem 1rem;
-        background-position: 50% 50%;
+        background-image: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.01)); // TEST
+        // background-image:
+        //     linear-gradient(to right, var(--counter-map-viewport-grid-lines-colour) 1px, transparent 1px),
+        //     linear-gradient(to bottom, var(--counter-map-viewport-grid-lines-colour) 1px, transparent 1px);
+        // background-size: 1rem 1rem;
+        // background-position: 50% 50%;
         overflow: hidden;
         touch-action: none;
     }

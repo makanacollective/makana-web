@@ -144,6 +144,7 @@ export type CounterMap = SanityDocumentBase
   _type: 'specialProject_counterMap'
   submissionForm?: ResolvedSanityReference<Form>
   mapAsset?: ResolvedSanityReference<SanityImage>
+  mapViewportBackgroundColour?: string
   mapMarkers?: Array<{
     _key: string
     x?: number
