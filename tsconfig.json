@@ -3,6 +3,7 @@
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist"],
   "compilerOptions": {
+    "ignoreDeprecations": "6.0", // TODO remove when TS 7 is released and Astro supports paths without baseUrl 
     "baseUrl": ".",
     "paths": {
       "@components/*": ["src/components/*"],

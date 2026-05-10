@@ -1,7 +1,7 @@
 {
   "name": "makana-web",
   "type": "module",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
@@ -9,12 +9,12 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.6.0",
+    "@astrojs/sitemap": "^3.7.2",
     "@portabletext/to-html": "^2.0.14",
     "@sanity/asset-utils": "^2.2.1",
     "@sanity/client": "^7.6.0",
     "@sanity/image-url": "^1.1.0",
-    "astro": "^5.15.4",
+    "astro": "^6.3.1",
     "hammerjs": "^2.0.8",
     "luxon": "^3.7.1",
     "sass": "^1.89.2",
