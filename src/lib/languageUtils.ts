@@ -2,7 +2,7 @@ import type { Language } from '@root/sanity/sanity.types';
 
 type LanguageDefinition = {
     title: string;
-    dir: string;
+    dir: 'ltr' | 'rtl';
     default?: boolean;
 };
 
@@ -47,7 +47,7 @@ let cachedDefaultLanguage: ({ id: Language } & LanguageDefinition) | undefined =
 export const DEFAULT_LANGUAGE = (() => {
     if (cachedDefaultLanguage) return cachedDefaultLanguage;
     const entry = Object.entries(SUPPORTED_LANGUAGES_RECORD).find(([_, def]) => def.default);
-    if (!entry) throw new Error('No default language defined in SUPPORTED_LANGUAGES');
+    if (!entry) throw new Error('No default language defined in SUPPORTED_LANGUAGES_RECORD');
     const [id, def] = entry;
     cachedDefaultLanguage = { id: id as Language, ...def };
     return cachedDefaultLanguage;

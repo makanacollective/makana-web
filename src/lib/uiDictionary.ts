@@ -80,8 +80,8 @@ export const UI_DICTIONARY: DocumentTypeLabels & SubpageTitles & {
         en: '-- select an option --',
     },
     error404Message: {
-        ar: `<h1>خطأ 404: الصفحة غير متوفرة</h1><p>قد تكون الصفحة التي تبحثون عنها نُقلت أو حُذفت، أو ربّما لم تكن موجودة أصلًا.</p><p>يمكنكم تجربة ما يلي:</p><ol><li>التحقق من صحة الرابط</li><li>العودة إلى <a href='${HOME_PAGE_PATHNAME}'>الصفحة الرئيسة</a></li></ol><p>إذا استمرت المشكلة، يُرجى التواصل معنا أو تكرار المحاولة لاحقًا.</p><p><em>مكانة</em></p>`,
-        en: `<h1>Error 404: Page not found</h1><p>The page you are looking for may have been moved or deleted, or it might have never existed at all.</p><p>A few things you can try:</p><ol><li>Check the URL for any typos</li><li>Go back to the <a href='${HOME_PAGE_PATHNAME}'>homepage</a></li></ol><p>If the problem persists, please contact us or try again later.</p><p><em>makāna</em></p>`,
+        ar: `<h1>خطأ 404: الصفحة غير موجودة</h1><p>يبدو أن الصفحة التي تبحثون عنها قد نُقلت أو حُذفت، أو ربّما لم تكن موجودة من الأساس.</p><p>يمكنكم تجربة ما يلي:</p><ol><li>التأكد من صحة الرابط</li><li>العودة إلى <a href='${HOME_PAGE_PATHNAME}'>الصفحة الرئيسة</a></li></ol><p>إذا استمرت المشكلة، يُرجى التواصل معنا أو إعادة المحاولة لاحقًا.</p><p><em>مكانة</em></p>`,
+        en: `<h1>Error 404: Page not found</h1><p>It looks like the page you are looking for may have been moved or deleted, or may never have existed.</p><p>You can try the following:</p><ol><li>Check the URL for any mistakes</li><li>Go back to the <a href='${HOME_PAGE_PATHNAME}'>homepage</a></li></ol><p>If the issue continues, please contact us or try again later.</p><p><em>makāna</em></p>`,
     },
     comma: {
         ar: '،',
