@@ -155,6 +155,6 @@ export const UI_DICTIONARY: DocumentTypeLabels & CounterMapSubpageTitles & {
         en: 'Contribute to our list of initiatives',
     },
     counterMapInformationSymbol: `<svg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M12,8.6c-.2,0-.4,0-.5-.2,0-.1-.1-.2-.1-.4v-.2c0-.2,0-.3.1-.4,0-.1.2-.2.5-.2s.4,0,.5.2.1.2.1.4v.2c0,.2,0,.3-.1.4s-.2.2-.5.2ZM11.5,16.4v-6.3h1v6.3h-1Z'/></svg>`,
-    counterMapProcessSymbol: `<svg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><circle cx='5' cy='12' r='1.5'/><circle cx='12' cy='12' r='1.5'/><circle cx='19' cy='12' r='1.5'/></svg>`,
+    counterMapProcessSymbol: `<svg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><circle cx='7' cy='12' r='1.1'/><circle cx='12' cy='12' r='1.1'/><circle cx='17' cy='12' r='1.1'/></svg>`,
     counterMapContributeSymbol: `<svg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><line x1='12' y1='4' x2='12' y2='20'/><line x1='4' y1='12' x2='20' y2='12'/></svg>`,
 };
