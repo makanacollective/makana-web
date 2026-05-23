@@ -1,4 +1,4 @@
-import type { AnyContentDocument, AnyLocationedDocument, AnyMetaedDocument, AnyRichlyDatedDocument, AnySimplyDatedDocument, AnyTargetableDocument, AnyTargetableDocumentStub, AnyTargetableDocumentType, AnyTitledDocument, Language, PageBuilder } from '@root/sanity/sanity.types';
+import type { AnyContentDocument, AnyLocationedDocument, AnyMetaedDocument, AnyRichlyDatedDocument, AnySecondaryContentDocument, AnySimplyDatedDocument, AnyTargetableDocument, AnyTargetableDocumentStub, AnyTargetableDocumentType, AnyTitledDocument, Language, PageBuilder } from '@root/sanity/sanity.types';
 import { DEFAULT_LANGUAGE_ID, FSI, PDI, SUPPORTED_LANGUAGES_IDS } from '@lib/languageUtils';
 import { UI_DICTIONARY } from '@lib/uiDictionary';
 import { getFromRegistry } from '@lib/idRegistry';
@@ -79,6 +79,16 @@ export const getContent = (
     const content = doc.content?.[lang];
     if (!content) return undefined;
     return content;
+};
+
+export const getSecondaryContent = (
+    doc: AnySecondaryContentDocument | undefined,
+    lang: Language | undefined,
+): PageBuilder | undefined => {
+    if (!doc || !lang) return undefined;
+    const secondaryContent = doc.secondaryContent?.[lang];
+    if (!secondaryContent) return undefined;
+    return secondaryContent;
 };
 
 export const getTextLength = (

@@ -6,7 +6,7 @@ import { DEFAULT_LANGUAGE_ID } from '@lib/languageUtils';
 import { fetchSvg } from '@lib/imageUtils';
 import { getDate, getPreferredSlug, getTitle, type DateObject } from '@lib/contentUtils';
 import SuperposedContent from '@components/SuperposedContent.astro';
-import { COUNTER_MAP_SUBPAGE_PATHS, generateRoute, type SubpageKey } from '@lib/routingUtils';
+import { COUNTER_MAP_SUBPAGE_PATHS, generateRoute, type CounterMapSubpageKey } from '@lib/routingUtils';
 import { UI_DICTIONARY } from '@lib/uiDictionary';
 
 const doc: (CounterMap & {
@@ -138,14 +138,16 @@ const routeToCounterMap = generateRoute(doc, counterMapSlugData?.langUsed);
             {langUsed && routeToCounterMap && (
                 <Fragment slot='in-orbs'>
                     {Object.keys(COUNTER_MAP_SUBPAGE_PATHS).map((key) => {
-                        const subpageKey = key as SubpageKey;
+                        const subpageKey = key as CounterMapSubpageKey;
                         const href= routeToCounterMap + COUNTER_MAP_SUBPAGE_PATHS[subpageKey][langUsed];
                         const label =
                             subpageKey === 'counter-map-information' ? UI_DICTIONARY.counterMapInformationLabel[langUsed]
+                            : subpageKey === 'counter-map-process' ? UI_DICTIONARY.counterMapProcessLabel[langUsed]
                             : subpageKey === 'counter-map-contribute' ? UI_DICTIONARY.counterMapContributeLabel[langUsed]
                             : resolvedTitle;
                         const symbol =
                             subpageKey === 'counter-map-information' ? UI_DICTIONARY.counterMapInformationSymbol
+                            : subpageKey === 'counter-map-process' ? UI_DICTIONARY.counterMapProcessSymbol
                             : subpageKey === 'counter-map-contribute' ? UI_DICTIONARY.counterMapContributeSymbol
                             : undefined;
                         return subpageKey && href && label && symbol && (
@@ -376,6 +378,9 @@ const routeToCounterMap = generateRoute(doc, counterMapSlugData?.langUsed);
         }
     }
     .counter-map-information :global(svg) {
+        fill: currentColor;
+    }
+    .counter-map-process :global(svg) {
         fill: currentColor;
     }
     .counter-map-contribute :global(svg) {

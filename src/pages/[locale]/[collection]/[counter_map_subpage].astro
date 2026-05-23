@@ -2,30 +2,83 @@
 import type { GetStaticPaths } from 'astro';
 import type { CounterMap as CounterMapProps, Language } from '@root/sanity/sanity.types';
 import { SUPPORTED_LANGUAGES_IDS } from '@lib/languageUtils';
-import { definedLocalisedSlug, definedMapAsset, RESOLVED_CONTENT_QUERY } from '@lib/groqUtils';
+import { definedLocalisedSlug, definedMapAsset, RESOLVED_CONTENT_QUERY, RESOLVED_SECONDARY_CONTENT_QUERY } from '@lib/groqUtils';
 import sanityClient from '@root/sanity/sanity.cli';
-import { filterByLocalisedSlug, getContent, getSlug, getSummary, getTextLength, getTitle, type AlternateDocument } from '@lib/contentUtils';
-import { COUNTER_MAP_SUBPAGE_PATHS, generateRoute, getSubpageKeyFromSlug, HOME_PAGE_PATHNAME, LOCALE_PREFIXES, type SubpageSlug } from '@lib/routingUtils';
+import { filterByLocalisedSlug, getContent, getSecondaryContent, getSlug, getSummary, getTextLength, getTitle, type AlternateDocument } from '@lib/contentUtils';
+import { COUNTER_MAP_SUBPAGE_PATHS, generateRoute, getCounterMapSubpageKeyFromSlug, HOME_PAGE_PATHNAME, LOCALE_PREFIXES, type CounterMapSubpageSlug } from '@lib/routingUtils';
 import Layout from '@layouts/Layout.astro';
 import CounterMap from '@components/CounterMap.astro';
 import WindowedContent from '@components/WindowedContent.astro';
 import PageContent from '@components/PageContent.astro';
 import { UI_DICTIONARY } from '@lib/uiDictionary';
 
+/**
+ * HOW TO ADD A NEW COUNTER-MAP SUBPAGE
+ * 
+ * This file generates dynamic Counter-Map subpages.
+ * 
+ * The Counter-Map (@components/CounterMap.astro) can expose multiple
+ * subpages (e.g. information, process, contribute), and each subpage is resolved
+ * dynamically based on locale and Sanity content.
+ * 
+ * Due to the architecture of this website and project requirements,
+ * subpage slugs are manually defined per locale.
+ * 
+ * Adding a new subpage requires coordinated changes across several files:
+ * 
+ * -------------------------------------------------------------------
+ * 1. @lib/routingUtils.ts
+ * -------------------------------------------------------------------
+ * - Add a new key to `CounterMapSubpageKey`
+ * - Add the corresponding slugs to `CounterMapSubpageSlug`
+ * - Add the mapping in `COUNTER_MAP_SUBPAGE_PATHS`:
+ *     key: { en: slug, ar: slug }
+ * 
+ * -------------------------------------------------------------------
+ * 2. @lib/uiDictionary.ts
+ * -------------------------------------------------------------------
+ * - Add a new entry in `UI_DICTIONARY` for the same key you added to `CounterMapSubpageKey`
+ *     This will be used as the subpage title in the UI
+ *     See `counter-map-contribute` for an example
+ *     If the values are null, the subpage title will default to the Counter-Map title
+ * - Define label + symbol for UI display
+ *     See `counterMapInformationLabel` and `counterMapInformationSymbol` for examples
+ * 
+ * -------------------------------------------------------------------
+ * 3. @components/CounterMap.astro
+ * -------------------------------------------------------------------
+ * - In the `<Fragment slot='in-orbs'>` section:
+ *   - Add label resolution case for the new `subpageKey`
+ *   - Add symbol resolution case for the new `subpageKey`
+ * - Add CSS styling for the orb if required
+ *     See `.counter-map-information` as an example
+ * 
+ * -------------------------------------------------------------------
+ * 4. THIS FILE
+ * -------------------------------------------------------------------
+ * - Extend `subpageKey` checks if needed
+ *     `isInformation` / `isProcess` / `isContribute` pattern
+ * - Define what content the subpage should render:
+ *     - `getContent(doc, lang)`
+ *     - `getSecondaryContent(doc, lang)`
+ *     - `doc.submissionForm`
+ *     - etc.
+ *
+ * -------------------------------------------------------------------
+ * ADDITIONAL INFORMATION
+ * -------------------------------------------------------------------
+ * - Depending on the use case, you may need to make modify the content model.
+ *     If so, updates to TypeScript definitions in @root/sanity/sanity.types.ts may be required.
+ * 
+ */
+
 export const getStaticPaths: GetStaticPaths = async () => {
-    type CounterMapSubpages = {
-        [K in Language]: SubpageSlug[];
-    };
-    const COUNTER_MAP_SUBPAGES: CounterMapSubpages = {
-        en: [
-            'information',
-            'contribute',
-        ],
-        ar: [
-            'maaloumat',
-            'lil-musahama'
-        ],
-    };
+    const COUNTER_MAP_SUBPAGES_BY_LANG = Object.fromEntries(
+        SUPPORTED_LANGUAGES_IDS.map((lang) => [
+            lang,
+            Object.values(COUNTER_MAP_SUBPAGE_PATHS).map((p) => p[lang]),
+        ])
+    ) as Record<Language, CounterMapSubpageSlug[]>;
     const documentType: CounterMapProps['_type'] = 'specialProject_counterMap';
     const languages: Language[] = SUPPORTED_LANGUAGES_IDS as Language[];
     const paths: { params: Record<string, string>, props: Record<string, any> }[] = [];
@@ -38,6 +91,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
         'mainImage',
         'submissionForm->',
         RESOLVED_CONTENT_QUERY,
+        RESOLVED_SECONDARY_CONTENT_QUERY,
     ];
     const queryFields = baseQueryFields.join(', ');
     const fetchedDoc: CounterMapProps = await sanityClient.fetch(`
@@ -52,7 +106,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
         const slug = getSlug(doc, lang);
         if (!slug) continue;
         const locale = LOCALE_PREFIXES[lang];
-        for (const subpageSlug of COUNTER_MAP_SUBPAGES[lang]) {
+        for (const subpageSlug of COUNTER_MAP_SUBPAGES_BY_LANG[lang]) {
             paths.push({
                 params: {
                     locale: locale,
@@ -73,7 +127,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 type Props = {
     lang: Language;
     doc: CounterMapProps;
-    subpageSlug: SubpageSlug;
+    subpageSlug: CounterMapSubpageSlug;
 };
 
 const {
@@ -82,14 +136,21 @@ const {
     subpageSlug,
 } = Astro.props as Props;
 
-const subpageKey = getSubpageKeyFromSlug(subpageSlug, lang);
+const subpageKey = getCounterMapSubpageKeyFromSlug(subpageSlug, lang);
+
+const isInformation = subpageKey === 'counter-map-information';
+const isProcess = subpageKey === 'counter-map-process';
+const isContribute = subpageKey === 'counter-map-contribute';
 
 const routeToCounterMap = generateRoute(doc, lang);
 const resolvedTitle = getTitle(doc, lang);
 const resolvedDescription = getSummary(doc, lang);
 const resolvedImage = doc.mainImage;
 const resolvedTextLength = getTextLength(doc, lang);
-const resolvedContent = getContent(doc, lang);
+
+const resolvedContent = isInformation ? getContent(doc, lang) : undefined;
+const resolvedSecondaryContent = isProcess ? getSecondaryContent(doc, lang) : undefined;
+const resolvedSubmissionForm = isContribute ? doc.submissionForm : undefined;
 
 const resolvedAlternates: AlternateDocument[] = (() => {
     if (!subpageKey) return [];
@@ -110,8 +171,6 @@ const resolvedAlternates: AlternateDocument[] = (() => {
         })
         .filter(Boolean) as AlternateDocument[];
 })();
-
-const resolvedSubmissionForm = doc.submissionForm;
 ---
 
 <Layout
@@ -133,10 +192,13 @@ const resolvedSubmissionForm = doc.submissionForm;
         alternates={resolvedAlternates}
         exitPathname={routeToCounterMap}
     >
-        {resolvedContent && (subpageSlug === 'information' || subpageSlug === 'maaloumat') && (
+        {resolvedContent && (
             <PageContent source={resolvedContent} lang={lang} />
         )}
-        {resolvedSubmissionForm && (subpageSlug === 'contribute' || subpageSlug === 'lil-musahama') && (
+        {resolvedSecondaryContent && (
+            <PageContent source={resolvedSecondaryContent} lang={lang} />
+        )}
+        {resolvedSubmissionForm && (
             <PageContent
                 source={[
                     {

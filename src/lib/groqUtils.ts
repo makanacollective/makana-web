@@ -76,3 +76,15 @@ export const RESOLVED_CONTENT_QUERY = (`
         `)).join(',')}
     }
 `);
+
+// Duplicate of `RESOLVED_CONTENT_QUERY`, without `textLength`
+export const RESOLVED_SECONDARY_CONTENT_QUERY = (`
+    secondaryContent {
+        ${SUPPORTED_LANGUAGES_IDS.map((langId) => (`
+            ${langId}[] {
+                ...,
+                ${PT_RESOLVERS}
+            }
+        `))}
+    }
+`);

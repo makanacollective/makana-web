@@ -333,6 +333,11 @@ const html = toHTML(source, {
     </div>
 )}
 
+<script>
+    const forms: NodeListOf<HTMLFormElement> | undefined = document.querySelectorAll('.page-content form');
+    forms?.forEach((form) => form.reset());
+</script>
+
 <style lang='scss' is:global>
     .page-content {
         &:lang(ar) {
@@ -560,23 +565,23 @@ const html = toHTML(source, {
                 cursor: pointer;
             }
             @media (any-hover: hover) {
-                .text-field input:not(:focus):hover,
-                .textarea-field textarea:not(:focus):hover {
-                    background-color: var(--form-field-background-hover-colour);
-                }
-                .text-field label:not(:focus):hover + input,
-                .textarea-field label:not(:focus):hover + textarea {
-                    background-color: var(--form-field-background-default-colour);
-                }
-                .select-field select:not(:focus):hover {
-                    background-color: var(--form-field-background-hover-colour);
-                }
-                .select-field label:not(:focus):hover + select {
-                    background-color: var(--form-field-background-default-colour);
-                }
-                .checkbox-field input:not(:focus):hover {
-                    background-color: var(--form-field-background-hover-colour);
-                }
+                // .text-field input:not(:focus):hover,
+                // .textarea-field textarea:not(:focus):hover {
+                //     background-color: var(--form-field-background-hover-colour);
+                // }
+                // .text-field label:not(:focus):hover + input,
+                // .textarea-field label:not(:focus):hover + textarea {
+                //     background-color: var(--form-field-background-default-colour);
+                // }
+                // .select-field select:not(:focus):hover {
+                //     background-color: var(--form-field-background-hover-colour);
+                // }
+                // .select-field label:not(:focus):hover + select {
+                //     background-color: var(--form-field-background-default-colour);
+                // }
+                // .checkbox-field input:not(:focus):hover {
+                //     background-color: var(--form-field-background-hover-colour);
+                // }
                 button:hover {
                     color: var(--text-link-hover-colour);
                 }

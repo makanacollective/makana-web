@@ -1,5 +1,5 @@
 import type { AnyTargetableDocumentType, Language } from '@root/sanity/sanity.types';
-import { HOME_PAGE_PATHNAME, type SubpageKey } from '@lib/routingUtils';
+import { HOME_PAGE_PATHNAME, type CounterMapSubpageKey } from '@lib/routingUtils';
 
 type LocalisedRecord<T> = {
     [L in Language]: T;
@@ -9,11 +9,11 @@ type DocumentTypeLabels = {
   [K in AnyTargetableDocumentType]: LocalisedRecord<string>;
 };
 
-type SubpageTitles = {
-  [K in SubpageKey]: LocalisedRecord<string | null>;
+type CounterMapSubpageTitles = {
+  [K in CounterMapSubpageKey]: LocalisedRecord<string | null>;
 };
 
-export const UI_DICTIONARY: DocumentTypeLabels & SubpageTitles & {
+export const UI_DICTIONARY: DocumentTypeLabels & CounterMapSubpageTitles & {
     websiteTitle: LocalisedRecord<string>;
     untitledLabel: LocalisedRecord<string>;
     navigationMenuLabel: LocalisedRecord<string>;
@@ -33,8 +33,10 @@ export const UI_DICTIONARY: DocumentTypeLabels & SubpageTitles & {
     timeAmLabel: LocalisedRecord<string>;
     timePmLabel: LocalisedRecord<string>;
     counterMapInformationLabel: LocalisedRecord<string>;
+    counterMapProcessLabel: LocalisedRecord<string>;
     counterMapContributeLabel: LocalisedRecord<string>;
     counterMapInformationSymbol: string;
+    counterMapProcessSymbol: string;
     counterMapContributeSymbol: string;
 } = {
     websiteTitle: {
@@ -132,6 +134,10 @@ export const UI_DICTIONARY: DocumentTypeLabels & SubpageTitles & {
         ar: null,
         en: null,
     },
+    'counter-map-process': {
+        ar: 'منهجية إعداد الخريطة',
+        en: 'Mapping Process',
+    },
     'counter-map-contribute': {
         ar: 'المساهمة في قائمة المبادرات',
         en: 'Contribute to our list of initiatives',
@@ -140,10 +146,15 @@ export const UI_DICTIONARY: DocumentTypeLabels & SubpageTitles & {
         ar: 'معلومات حول الخريطة',
         en: 'About the map',
     },
+    counterMapProcessLabel: {
+        ar: 'معلومات حول منهجية إعداد الخريطة',
+        en: 'About the mapping process',
+    },
     counterMapContributeLabel: {
         ar: 'المساهمة في قائمة المبادرات',
         en: 'Contribute to our list of initiatives',
     },
     counterMapInformationSymbol: `<svg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M12,8.6c-.2,0-.4,0-.5-.2,0-.1-.1-.2-.1-.4v-.2c0-.2,0-.3.1-.4,0-.1.2-.2.5-.2s.4,0,.5.2.1.2.1.4v.2c0,.2,0,.3-.1.4s-.2.2-.5.2ZM11.5,16.4v-6.3h1v6.3h-1Z'/></svg>`,
+    counterMapProcessSymbol: `<svg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><circle cx='5' cy='12' r='1.5'/><circle cx='12' cy='12' r='1.5'/><circle cx='19' cy='12' r='1.5'/></svg>`,
     counterMapContributeSymbol: `<svg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><line x1='12' y1='4' x2='12' y2='20'/><line x1='4' y1='12' x2='20' y2='12'/></svg>`,
 };

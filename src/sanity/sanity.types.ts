@@ -29,6 +29,10 @@ interface HasContent {
   textLength?: Localise<number>
 }
 
+interface HasSecondaryContent {
+  secondaryContent?: LocalisedPageBuilder
+}
+
 interface HasSimpleDate {
   date?: string
 }
@@ -138,6 +142,7 @@ export type CounterMap = SanityDocumentBase
   & IsFeaturable
   & HasTitle
   & HasContent
+  & HasSecondaryContent
   & HasSimpleDate
   & HasMeta
   & {
@@ -178,6 +183,9 @@ export type AnyTitledDocumentType = AnyTitledDocument['_type']
 
 export type AnyContentDocument = Extract<AnyDocument, HasContent>
 export type AnyContentDocumentType = AnyContentDocument['_type']
+
+export type AnySecondaryContentDocument = Extract<AnyDocument, HasSecondaryContent>
+export type AnySecondaryContentDocumentType = AnyContentDocument['_type']
 
 export type AnySimplyDatedDocument = Extract<AnyDocument, HasSimpleDate>
 export type AnySimplyDatedDocumentType = AnySimplyDatedDocument['_type']

@@ -43,14 +43,34 @@ const isCollectionDocument = (doc: AnyTargetableDocumentStub): doc is Collection
     return doc._type in DOCUMENT_COLLECTION_PATHS;
 };
 
-export type SubpageKey = 'counter-map-information' | 'counter-map-contribute';
+/**
+ * The definitions `CounterMapSubpageKey`, `CounterMapSubpageSlug`, and `COUNTER_MAP_SUBPAGE_PATHS`
+ * define and map the available Counter Map subpages.
+ * 
+ * They are used to resolve subpage keys to locale-specific slugs and generate routing paths.
+ * 
+ * More information about usage can be found in:
+ * @pages/[locale]/[collection]/[counter_map_subpage].astro
+ */
 
-export type SubpageSlug = 'information' | 'maaloumat' | 'contribute' | 'lil-musahama';
+export type CounterMapSubpageKey =
+    'counter-map-information'
+    | 'counter-map-process'
+    | 'counter-map-contribute';
 
-export const COUNTER_MAP_SUBPAGE_PATHS: Record<SubpageKey, LocalisedRecord<SubpageSlug>> = {
+export type CounterMapSubpageSlug =
+    'information' | 'maaloumat'
+    | 'process' | 'al-manhajiyya'
+    | 'contribute' | 'lil-musahama';
+
+export const COUNTER_MAP_SUBPAGE_PATHS: Record<CounterMapSubpageKey, LocalisedRecord<CounterMapSubpageSlug>> = {
     'counter-map-information': {
         en: 'information',
         ar: 'maaloumat',
+    },
+    'counter-map-process': {
+        en: 'process',
+        ar: 'al-manhajiyya',
     },
     'counter-map-contribute': {
         en: 'contribute',
@@ -58,11 +78,11 @@ export const COUNTER_MAP_SUBPAGE_PATHS: Record<SubpageKey, LocalisedRecord<Subpa
     },
 };
 
-export const getSubpageKeyFromSlug = (
-    slug: SubpageSlug,
+export const getCounterMapSubpageKeyFromSlug = (
+    slug: CounterMapSubpageSlug,
     lang: Language,
-): SubpageKey | undefined => {
-    return (Object.keys(COUNTER_MAP_SUBPAGE_PATHS) as SubpageKey[]).find((key) => {
+): CounterMapSubpageKey | undefined => {
+    return (Object.keys(COUNTER_MAP_SUBPAGE_PATHS) as CounterMapSubpageKey[]).find((key) => {
         return COUNTER_MAP_SUBPAGE_PATHS[key][lang] === slug;
     });
 };
