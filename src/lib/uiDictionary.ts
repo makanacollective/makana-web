@@ -135,8 +135,8 @@ export const UI_DICTIONARY: DocumentTypeLabels & CounterMapSubpageTitles & {
         en: null,
     },
     'counter-map-process': {
-        ar: 'منهجية إعداد الخريطة',
-        en: 'Mapping Process',
+        ar: 'منهجية ورشة العمل',
+        en: 'Workshop Process',
     },
     'counter-map-contribute': {
         ar: 'المساهمة في قائمة المبادرات',
@@ -147,8 +147,8 @@ export const UI_DICTIONARY: DocumentTypeLabels & CounterMapSubpageTitles & {
         en: 'About the map',
     },
     counterMapProcessLabel: {
-        ar: 'معلومات حول منهجية إعداد الخريطة',
-        en: 'About the mapping process',
+        ar: 'منهجية ورشة العمل',
+        en: 'Workshop Process',
     },
     counterMapContributeLabel: {
         ar: 'المساهمة في قائمة المبادرات',
